@@ -260,6 +260,7 @@ plt.title("Poincare Return Map")
 
 plt.legend()
 plt.grid()
+plt.savefig("Poincare.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 # Floquet Multiplier
@@ -313,12 +314,18 @@ plt.imshow(
     aspect="auto",
     cmap="viridis"
 )
-
+plt.scatter(
+    angular_velocity_star,
+    angular_velocity_star,
+    s=50,
+    label="Fixed point"
+)
 plt.xlabel(r"$\theta$")
 plt.ylabel(r"$\dot{\theta}$")
 plt.title("Estimated Region of Attraction")
 
 plt.colorbar(label="Attractor")
+plt.savefig("RoA.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
@@ -367,7 +374,7 @@ plt.xlabel(r"Slope $\gamma$")
 plt.ylabel("Floquet multiplier")
 plt.title("Floquet Multiplier vs Slope")
 plt.grid()
-
+plt.savefig("gamma_floquet.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
@@ -379,7 +386,7 @@ plt.xlabel(r"Slope $\gamma$")
 plt.ylabel("Fraction of state space in RoA")
 plt.title("Region of Attraction vs Slope")
 plt.grid()
-
+plt.savefig("gamma_RoA.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
@@ -434,7 +441,7 @@ plt.xlabel("Number of spokes N")
 plt.ylabel("Floquet multiplier")
 plt.title("Floquet Multiplier vs Number of Spokes")
 plt.grid()
-
+plt.savefig("spokes_floquet.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
@@ -446,5 +453,5 @@ plt.xlabel("Number of spokes N")
 plt.ylabel("Fraction of state space in RoA")
 plt.title("Region of Attraction vs Number of Spokes")
 plt.grid()
-
+plt.savefig("spokes_RoA.png", dpi=300, bbox_inches="tight")
 plt.show()

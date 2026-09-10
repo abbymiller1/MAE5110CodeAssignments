@@ -2,5 +2,8 @@
 # and https://medium.com/data-science/whats-init-for-me-d70a312da583
 
 from . import pendulum
+from . import rimless_wheel
+from . import bouncing_ball
 
-__all__ = ["pendulum"]
+__all__ = ["pendulum", "rimless_wheel", "bouncing_ball"]
+
