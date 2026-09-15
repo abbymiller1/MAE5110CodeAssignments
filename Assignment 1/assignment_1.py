@@ -148,6 +148,7 @@ if len(impact_states) >= 2:
     angular_velocity_k = impact_states[:-1, 1]
     angular_velocity_next = impact_states[1:, 1]
 
+    #Plot Poincare Return Map
     plt.figure()
 
     plt.scatter(angular_velocity_k, angular_velocity_next, s=10, alpha=0.5)
@@ -248,7 +249,7 @@ def find_fixed_point(params, angular_velocity_min=0.01, angular_velocity_max=10.
 
     return np.nan
 
-
+#Plot Poincare return map
 plt.figure()
 plt.plot(angular_velocity_values, return_values, label="Return map")
 plt.plot(angular_velocity_values, angular_velocity_values, "k--", label="Identity")
@@ -320,9 +321,11 @@ plt.scatter(
     s=50,
     label="Fixed point"
 )
+
+#Plot Region of Attraction
 plt.xlabel(r"$\theta$")
 plt.ylabel(r"$\dot{\theta}$")
-plt.title("Estimated Region of Attraction")
+plt.title("Region of Attraction")
 
 plt.colorbar(label="Attractor")
 plt.savefig("RoA.png", dpi=300, bbox_inches="tight")
@@ -363,7 +366,7 @@ for gamma in gammas:
     gamma_multipliers.append(multiplier_i)
     gamma_roa_fraction.append(fraction_i)
 
-
+#Plot Floquet Multiplier vs Slope
 plt.figure()
 
 plt.plot(gammas, gamma_multipliers, "o-")
@@ -377,7 +380,7 @@ plt.grid()
 plt.savefig("gamma_floquet.png", dpi=300, bbox_inches="tight")
 plt.show()
 
-
+#Plot RoA  vs Slope
 plt.figure()
 
 plt.plot(gammas, gamma_roa_fraction, "o-")
@@ -431,6 +434,7 @@ for n_spokes in spoke_values:
 
     spoke_roa_fraction.append(count / total)
 
+#Plot Floquet Multiplier vs Number of Spokes
 plt.figure()
 
 plt.plot(list(spoke_values), spoke_multipliers, "o-")
@@ -444,7 +448,7 @@ plt.grid()
 plt.savefig("spokes_floquet.png", dpi=300, bbox_inches="tight")
 plt.show()
 
-
+#Plot RoA  vs Number of Spokes
 plt.figure()
 
 plt.plot(list(spoke_values), spoke_roa_fraction, "o-")
