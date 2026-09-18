@@ -1,7 +1,7 @@
 Assignment 2 — Inverted Pendulum Walker
 1. Sketches
 
-(Insert the hand/code-generated figures here: the four snapshots — mid-stance, impact at small α, impact at large α, and the failure mode — followed by the state-space plot showing where each snapshot sits and how the touchdown guard θ_TD(γ, α) shifts as α changes. Per the assignment instructions, do not commit these images to git; regenerate them locally from the plotting code before compiling this file to PDF.)
+![Inverted Pendulum Sketches](inverted_pendulum_sketches.png)
 
 2. Region of Attraction (RoA) for the Ankle Controller
 
