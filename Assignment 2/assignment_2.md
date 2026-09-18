@@ -1,11 +1,11 @@
 Assignment 2 — Inverted Pendulum Walker
 1. Sketches
 
-![Inverted Pendulum Sketches](inverted_pendulum_sketches.png)
+![Inverted Pendulum Sketches](a2_photos/inverted_pendulum_sketches.jpeg)
 
 2. Region of Attraction (RoA) for the Ankle Controller
 
-![Region of Attraction](roa.png)
+![Region of Attraction](a2_photos/roa.png)
 
 
 After implementing feedback linearization to cancel the pendulum dynamics and adding a damping term to stabilize the upright equilibrium, initial conditions were swept over a grid of (theta, theta_dot) pairs around the origin. Each grid point was simulated forward under the continuous ankle controller; the RoA is the set of initial conditions from which the trajectory converges to the upright equilibrium.
@@ -32,9 +32,9 @@ At n = 3, the grid is too coarse to represent the return map at all because two 
 
 5. Multi-Step Trajectory
 
-![Multi-Step Trajectory](state_space_trajectory.png)
+![Multi-Step Trajectory](a2_photos/state_space.png)
 
 6. Steps-to-Standstill Map
 
-![Steps to Standstill](steps_to_standstill.png)
+![Steps to Standstill](a2_photos/steps_to_standstill.png)
 
