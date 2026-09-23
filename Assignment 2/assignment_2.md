@@ -18,13 +18,7 @@ Instead, the section used is theta = 0 (mid-stance). This is good for a Poincar√
 
 4. Grid Resolution Verification
 
-n (theta_ dot_axis)    Number of steps              unreachable states
-                       (theta_dot_0 = 3 rad/s)      
-3                       inf                         2/3
-4                       2                           0/4
-5                       3                           0/5
-10                      3                           0/10
-20                      3                           0/20
+![Grid Resolution Verification](a2_photos/grid_resolutions.png)
 
 The theta_dot_axis of the step-to-step lookup table was taken at several resolutions n = 3, 4, 5, 10, 20 points and swept from 0 to the Froude-2 velocity. At each resolution with the initial condition theta_dot = 3.0 rad/s the number of steps to standstill and how many of the swept states the policy could bring to standstill are checked.
 
