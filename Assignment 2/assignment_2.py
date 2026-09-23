@@ -1,13 +1,4 @@
-"""Assignment 2: stabilize and walk the inverted-pendulum walker down a slope.
-
-Two controllers are combined:
-  - a continuous ankle-torque balance law, active only once the state has
-    reached its (grid-verified) region of attraction (RoA);
-  - a discrete step-to-step controller that chooses the angle of attack once
-    per stance phase, from a lookup table built off a gridded theta = 0
-    Poincare return map, to steer the walker into that RoA in as few steps
-    as possible.
-"""
+"""Assignment 2: stabilize and walk the inverted-pendulum walker down a slope."""
 
 from pathlib import Path
 
@@ -43,7 +34,6 @@ froude_2_velocity = np.sqrt(2 * params["gravity"] / params["length"])
 def compute_ankle_balance_torque(state, params):
     """Feedback-linearizing PD law that stabilizes theta = 0.
     theta_ddot = g/l*sin(theta) + tau/(m*l^2)
-    u = -Kp*theta - Kd*theta_dot placing the poles.
     """
     gravity, length, mass = params["gravity"], params["length"], params["mass"]
     theta, theta_dot = state
@@ -97,12 +87,8 @@ def compute_ankle_torque(state, params, theta_values, velocity_values, roa_grid)
     return compute_ankle_balance_torque(state, params)
 
 
-# ---------------------------------------------------------------------------
-# Discrete step-to-step controller. Poincare section: theta = 0, which is
-# crossed exactly once per stance phase no matter the chosen angle of
-# attack (post-impact theta = incline - angle_of_attack < 0, footswitch
-# theta = incline + angle_of_attack > 0), unlike the footswitch itself.
-# ---------------------------------------------------------------------------
+# Discrete step-to-step controller
+# Poincare section: theta = 0, which is crossed exactly once per stance phase no matter the chosen angle of attack
 def advance_to_next_section(theta_dot, angle_of_attack, params, timestep, max_time=2.0):
     """One passive (ankle torque off) step of the return map: from velocity
     `theta_dot` at the section, integrate through the footswitch chosen by
@@ -176,8 +162,7 @@ def compute_steps_to_standstill(theta_dot_grid, next_theta_dot, theta_values, ve
 
 
 def compute_max_steps_to_standstill(theta_dot_grid, next_theta_dot, steps_to_stop):
-    """Longest footstep sequence that still reaches the RoA. Exact rather
-    than a heuristic: each footswitch collision loses energy
+    """Longest footstep sequence that still reaches the RoA. Each footswitch collision loses energy
     (cos(2*angle_of_attack) < 1) and this incline is too shallow to make
     that up in one swing, so theta_dot strictly decreases every step and
     the return map has no cycles."""
@@ -210,9 +195,7 @@ def compute_max_steps_to_standstill(theta_dot_grid, next_theta_dot, steps_to_sto
 def report_grid_resolution_check(candidate_sizes, angle_of_attack_grid, params, timestep,
                                   theta_values, velocity_values, roa_grid, theta_dot_of_interest):
     """Print how the step count for `theta_dot_of_interest` changes with
-    state-grid density, to justify the chosen resolution (coarser grids
-    that disagree are not fine enough). Returns the (theta_dot_grid,
-    next_theta_dot) built for the finest candidate size."""
+    state-grid density, to justify the chosen resolution."""
     print(f"{'n_theta_dot':>11} | {'steps@' + f'{theta_dot_of_interest:.2f}':>10} | unreachable states")
     theta_dot_grid = next_theta_dot = None
     for n_theta_dot in candidate_sizes:
@@ -238,11 +221,6 @@ def choose_from_policy(theta_dot, theta_dot_grid, angle_of_attack_grid, policy):
 def compute_new_stance_position(pre_impact_state, stance_position, params):
     """World-frame (x, y) of the swing foot at the instant of touchdown,
     which becomes the new stance foot once the legs swap.
-
-    Must be called with the state at the strike angle -- i.e. *before*
-    model.event_dynamics() resets theta -- together with the angle of
-    attack that was in effect for that step, since both feet's positions
-    are only fixed relative to each other at that instant.
     """
     theta = pre_impact_state[0]
     alpha = params["angle_of_attack"]
@@ -257,14 +235,11 @@ def compute_new_stance_position(pre_impact_state, stance_position, params):
 
 def simulate_walk(initial_state, params, theta_values, velocity_values, roa_grid,
                    theta_dot_grid, angle_of_attack_grid, policy, timestep, sim_time):
-    """Advance the full hybrid system: discrete step-to-step control (angle
-    of attack chosen once per stance phase from the lookup table) until the
-    state enters the ankle-balance RoA, then continuous ankle-torque
-    control.
+    """Discrete step-to-step control until the state enters the ankle-balance RoA, 
+    then continuous ankle-torque control.
 
     Also tracks the stance foot's world position, advancing it by the
-    footswitch geometry at every impact, so the walker can be drawn
-    actually walking down the slope instead of pivoting in place.
+    footswitch geometry at every impact.
     """
     n_steps = round(sim_time / timestep)
     time_traj = np.arange(n_steps + 1) * timestep
@@ -313,19 +288,12 @@ def draw_frame(index, state_traj, stance_position_traj, time_traj, params, ax, v
     # The stance foot has moved to wherever the last footswitch put it, so
     # the walker actually advances down the slope instead of resetting to
     # the origin every frame.
-    model.visualize(
-        state_traj[:, index],
-        params,
-        ax=ax,
-        stance_position=stance_position_traj[:, index],
-        view_limits=view_limits,
-    )
+    model.visualize(state_traj[:, index], params, ax=ax, 
+                    stance_position=stance_position_traj[:, index], view_limits=view_limits,)
     ax.set_title(f"t = {time_traj[index]:.2f} s")
 
 
-# ---------------------------------------------------------------------------
 # Build the region of attraction and the step-to-step lookup table.
-# ---------------------------------------------------------------------------
 print("Determining the ankle-balance controller's region of attraction...")
 theta_values = np.linspace(-0.35, 0.35, 41)
 velocity_values = np.linspace(-0.5, 0.5, 41)
@@ -335,8 +303,7 @@ print(f"RoA grid: {roa_grid.sum()} / {roa_grid.size} states converge.")
 print("\nChecking step-to-step lookup table resolution (theta_dot grid size):")
 angle_of_attack_grid = np.linspace(min_angle_of_attack, max_angle_of_attack, 21)
 step_timestep = 2e-4
-# 21 -> 41 grid points already agree on the step count for theta_dot = 3.0,
-# so 41 points (the finest candidate below) is fine enough; 11 is not.
+
 theta_dot_grid, next_theta_dot = report_grid_resolution_check(
     candidate_sizes=(11, 21, 41),
     angle_of_attack_grid=angle_of_attack_grid,
@@ -352,9 +319,7 @@ steps_to_stop, fastest_policy = compute_steps_to_standstill(
 )
 max_steps_to_stop, slowest_policy = compute_max_steps_to_standstill(theta_dot_grid, next_theta_dot, steps_to_stop)
 
-# ---------------------------------------------------------------------------
 # Simulate the walker from an initial condition that needs several steps.
-# ---------------------------------------------------------------------------
 initial_state = np.array([0.0, 3.0])
 timestep = 1e-4
 sim_time = 6.0
@@ -375,9 +340,7 @@ print(f"  fastest policy reaches the RoA in {completed_steps} footsteps.")
 print(f"  longest-walk policy reaches the RoA in {slow_completed_steps} footsteps.")
 
 
-# ---------------------------------------------------------------------------
 # Plots
-# ---------------------------------------------------------------------------
 output = Path("output/assignment_2")
 output.mkdir(parents=True, exist_ok=True)
 
@@ -421,9 +384,7 @@ plt.savefig("state_space_trajectory.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
-# ---------------------------------------------------------------------------
 # Animation
-# ---------------------------------------------------------------------------
 fig, ax = plt.subplots(figsize=(8, 5), layout="constrained")
 
 # Simulate at a small timestep, but render only 25 frames per second.
@@ -433,13 +394,7 @@ frame_indices = list(range(0, time_traj.size, frame_stride))
 if frame_indices[-1] != time_traj.size - 1:
     frame_indices.append(time_traj.size - 1)
 
-# Fix the camera to the whole walk instead of the default per-frame
-# "recenter on the current stance foot" view: that default follow-cam
-# would keep every frame looking visually identical (foot always in the
-# same place on screen), which is what made the walker look like it was
-# resetting in place. With a single wide, static window sized to the
-# full excursion of the stance foot, the walker visibly travels across
-# the frame as it steps down the slope.
+
 margin = 2.5 * params["length"]
 x_min = stance_position_traj[0, : frame_indices[-1] + 1].min() - margin
 x_max = stance_position_traj[0, : frame_indices[-1] + 1].max() + margin

@@ -79,10 +79,7 @@ def calculate_energy(state, params):
     """
     Compute energies for a state (2,) or trajectory (2, N).
     Mass sits above the pivot so potential energy is maximized at angle = 0,
-    an unstable equilibrium -- same convention as the rimless wheel. The
-    ankle torque is a non-conservative input, so it isn't part of this
-    state-only energy; expect total energy to rise/fall during stance
-    whenever ankle_torque != 0.
+    an unstable equilibrium.
     """
     gravity = params["gravity"]
     length = params["length"]
