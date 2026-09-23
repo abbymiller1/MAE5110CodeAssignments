@@ -1,7 +1,7 @@
-"""InvertedPendulumWalker starter model, with visualization provided.
+"""Inverted-pendulum walker: a rimless wheel with two control inputs.
 
-Implement the model functions for Assignment 2. The visualizer works independently
-of those functions; it draws a supplied state without advancing the simulation.
+u1 = ankle_torque acts continuously during stance; u2 = angle_of_attack is
+chosen once per step and only takes effect at the next footswitch.
 """
 
 import matplotlib.pyplot as plt
@@ -9,24 +9,88 @@ import numpy as np
 
 
 def generate_params():
-    pass
+    """
+    angle_of_attack (alpha) and ankle_torque (tau) are the two control
+    inputs (u2 and u1)
+    """
+    params = {
+        "gravity": 9.81,  # gravity (m/s^2)
+        "length": 1,  # rod length (m)
+        "mass": 1,  # point mass at end of rod (kg)
+        "incline": 0.06,  # slope incline angle gamma (rad)
+        "angle_of_attack": np.pi / 8,  # half inter-leg angle alpha (rad), control input u2
+        "ankle_torque": 0.0,  # ankle torque tau (N*m), control input u1
+    }
+    return params
 
 
 def dynamics(t, state, params):
-    # TODO: implement the state derivative.
-    return np.array([0.0, 0.0])
+    gravity = params["gravity"]
+    length = params["length"]
+    mass = params["mass"]
+    ankle_torque = params.get("ankle_torque", 0.0)
+
+    angle = state[0]
+    angular_velocity = state[1]
+
+    angular_acceleration = (gravity * np.sin(angle)) / length + ankle_torque / (
+        mass * length**2
+    )
+
+    state_derivative = np.array([angular_velocity, angular_acceleration])
+    return state_derivative
 
 
 def event_guard(previous_state, next_state, params):
-    pass
+    """
+    Impact-event guard for the swing-leg footswitch.
+    """
+    alpha = params["angle_of_attack"]
+    gamma = params["incline"]
+    strike_angle = gamma + alpha
+
+    guard_previous = previous_state[0] - strike_angle
+    guard_next = next_state[0] - strike_angle
+    return guard_previous < 0 <= guard_next
 
 
 def event_dynamics(state, params):
-    pass
+    """
+    Instantaneous plastic collision at footswitch
+      1. Coordinate shift: the swing leg becomes the new stance leg. Its
+         angle at the touchdown instant was
+         strike_angle - 2*alpha = (incline + alpha) - 2*alpha = incline - alpha,
+         so that becomes the new angle.
+      2. Velocity reset from conservation of angular momentum about the new
+         contact point: angular_velocity+ = angular_velocity- * cos(2*alpha),
+         the same factor as the rimless wheel (depends only on the angle
+         between the legs, not on the slope).
+    """
+    alpha = params["angle_of_attack"]
+    gamma = params["incline"]
+    angular_velocity = state[1]
+
+    new_angle = gamma - alpha
+    new_angular_velocity = angular_velocity * np.cos(2 * alpha)
+    return np.array([new_angle, new_angular_velocity])
 
 
 def calculate_energy(state, params):
-    pass
+    """
+    Compute energies for a state (2,) or trajectory (2, N).
+    Mass sits above the pivot so potential energy is maximized at angle = 0,
+    an unstable equilibrium.
+    """
+    gravity = params["gravity"]
+    length = params["length"]
+    mass = params["mass"]
+
+    angle = state[0]  # indexes entire row "vectorized" if state is (2, N)
+    angular_velocity = state[1]
+
+    kinetic_energy = 0.5 * mass * (length * angular_velocity) ** 2
+    potential_energy = mass * gravity * length * np.cos(angle)
+    return kinetic_energy, potential_energy
 
 
 def visualize(
