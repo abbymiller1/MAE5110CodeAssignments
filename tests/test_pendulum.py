@@ -9,6 +9,7 @@ from models import pendulum
 
 def simulate_pendulum(params, initial_state, n_steps=100, timestep=0.01):
     states = [initial_state]
+    """Simulate the pendulum with RK4 and return states with shape (2, n_steps + 1)."""
 
     for step in range(n_steps):
         states.append(rk4(pendulum.dynamics, step * timestep, states[-1], timestep, params))
@@ -17,11 +18,13 @@ def simulate_pendulum(params, initial_state, n_steps=100, timestep=0.01):
 
 
 def find_total_energy(states, params):
+    """Return kinetic plus potential energy at every time step in states."""
     kinetic_energy, potential_energy = pendulum.calculate_energy(states, params)
     return kinetic_energy + potential_energy
 
 
 def test_energy_conservation():
+    """With no damping and no torque, total energy should stay constant."""
     params = pendulum.generate_params()
     params["damping_coeff"] = 0.0  # Ensure no damping for energy conservation test
     params["torque"] = 0.0  # Ensure no external torque for energy conservation test
@@ -34,6 +37,7 @@ def test_energy_conservation():
 
 
 def test_damping_removes_energy():
+    """Damping removes energy, so total energy should decrease."""
     params = pendulum.generate_params()
     params["damping_coeff"] = 0.5  # Introduce damping
     params["torque"] = 0.0  # Ensure no external torque for energy conservation test
@@ -47,6 +51,7 @@ def test_damping_removes_energy():
 
 
 def test_torque():
+    """With no damping, the energy gained should equal the torque's work:  tau * delta_theta"""
     params = pendulum.generate_params()
     params["damping_coeff"] = 0.0
     params["torque"] = 2.0
@@ -54,7 +59,6 @@ def test_torque():
  
     states = simulate_pendulum(params, initial_state)
 
-    # With no damping, the work done by torque: tau * delta_theta.
     total_energy = find_total_energy(states, params)
     energy_change = total_energy[-1] - total_energy[0]
     work = params["torque"] * (states[0, -1] - states[0, 0])
