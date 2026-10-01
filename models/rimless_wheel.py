@@ -72,3 +72,7 @@ def calculate_energy(state, params):
     kinetic_energy = 0.5 * mass * (length * angular_velocity) ** 2 #recall v = omega*l
     potential_energy = mass * gravity * length * np.cos(angle)
     return kinetic_energy, potential_energy
+
+
+def generate_initial_condition():
+    return np.array([0.0, 0.0])

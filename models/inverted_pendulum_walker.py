@@ -193,3 +193,7 @@ def visualize(
     )
     ax.set_aspect("equal", adjustable="box")
     return ax
+
+
+def generate_initial_condition():
+    return np.array([0.0, 0.0])

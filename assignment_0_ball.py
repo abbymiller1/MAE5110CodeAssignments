@@ -27,7 +27,7 @@ state_traj[:, 0] = initial_state
 
 # simulation loop
 for step, t in enumerate(time_traj[:-1]):
-    state_traj[:, step + 1] = integrator(t, state_traj[:, step], timestep, model.dynamics, params)
+    state_traj[:, step + 1] = integrator(model.dynamics, t, state_traj[:, step], timestep, params)
 
     if state_traj[0, step + 1] <= 0: #if the position is less than or equal to zero, we have hit the ground
         state_traj[1, step + 1] = -params["restitution_coeff"] * state_traj[1, step + 1]

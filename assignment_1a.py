@@ -26,7 +26,7 @@ impact_times = []
 # simulation loop
 for step, t in enumerate(time_traj[:-1]):
     current_state = state_traj[:, step]
-    next_state = integrator(t, current_state, timestep, model.dynamics, params)
+    next_state = integrator(model.dynamics, t, current_state, timestep, params)
 
     guard_before = model.detect_impact(t, current_state, params)
     guard_after = model.detect_impact(t + timestep, next_state, params)
