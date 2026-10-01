@@ -1,4 +1,4 @@
-# Pendulum swing-up with value iteration
+# Pendulum swing-up with value iteration example
 #
 # From the repository root, run `uv run scripts/example_value_iteration.py`.
 # Build a transition matrix, solve for a torque policy, and simulate the
